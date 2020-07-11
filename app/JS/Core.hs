@@ -9,14 +9,17 @@ data Val = Number Int |
            Boolean Bool |
            JSString String |
            Nil | 
-           Symbol String 
+           Symbol String |
+           Let String Val | 
+           Void
 
 instance Show Val where 
        show (Number a) = show a
        show (Boolean a) = show a
 
 data Diagnostic = UnimplementedError String |
-                  UndefinedError String
+                  UndefinedError String |
+                  AssigningToConstantError String 
 
 instance Show Diagnostic where 
        show (UnimplementedError a) = a ++ " is unimplemented"

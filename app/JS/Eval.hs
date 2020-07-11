@@ -14,3 +14,9 @@ eval (Symbol s) = do
     case H.lookup s env of
         Nothing -> throwError (UndefinedError s)
         Just a -> return a
+
+eval (Let paramName val) = do 
+    env <- get
+    evaledVal <- eval val 
+    put $ H.insert paramName evaledVal env 
+    return Void
