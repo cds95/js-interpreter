@@ -8,19 +8,13 @@ import Control.Monad
 import Control.Monad.State
 import Control.Monad.Except
 
-repl :: Env -> IO ()
+repl :: JSState -> IO ()
 repl env = do 
     putStr "js> "
     l <- getLine
-    case parse exprP "Expression" l of 
-        Left err -> print err 
-        Right exp -> 
-            case runExcept $ runStateT (eval exp) env of
-                Left err -> print err 
-                Right (res, newEnv) -> do 
-                    print res 
-                    repl newEnv
-    repl env
+    let (is, newEnv, output) = eval (words l) env 
+    print output
+    repl (is, newEnv, output)
 
 main :: IO () 
 main = repl runtime

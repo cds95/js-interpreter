@@ -1,22 +1,18 @@
 module JS.Eval where 
 import JS.Core
+import JS.Compile
 
 import Data.HashMap.Strict as H (HashMap, insert, lookup, empty, fromList)
 import Control.Monad.Except
 import Control.Monad.State
 
-eval :: Val -> EvalState Val
-eval v@(Number _) = return v
-eval v@(Boolean _) = return v 
+envLookupHelper sym env = 
+    case H.lookup sym env of 
+        Just x -> x
 
-eval (Symbol s) = do 
-    env <- get 
-    case H.lookup s env of
-        Nothing -> throwError (UndefinedError s)
-        Just a -> return a
+eval :: [String] -> JSState -> JSState
+eval (w:ws) s@(is, env, o) = 
+    case envLookupHelper w env of 
+        Define -> compile (w:ws) s
 
-eval (Let paramName val) = do 
-    env <- get
-    evaledVal <- eval val 
-    put $ H.insert paramName evaledVal env 
-    return Void
+    

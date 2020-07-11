@@ -10,7 +10,7 @@ data Val = Number Int |
            JSString String |
            Nil | 
            Symbol String |
-           Let String Val | 
+           Define |
            Void
 
 instance Show Val where 
@@ -25,4 +25,4 @@ instance Show Diagnostic where
        show (UnimplementedError a) = a ++ " is unimplemented"
        show (UndefinedError a) = a ++ " is undefined"
 
-type EvalState a = StateT Env (Except Diagnostic) a
+type JSState = ([String], Env, [String])
