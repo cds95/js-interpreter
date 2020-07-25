@@ -8,13 +8,13 @@ import Control.Monad
 import Control.Monad.State
 import Control.Monad.Except
 
-repl :: JSState -> IO ()
+repl :: Env -> IO ()
 repl env = do 
     putStr "js> "
     l <- getLine
-    let (is, newEnv, output) = eval (words l) env 
+    let (newEnv, output) = eval (VarExp "a") env 
     print output
-    repl (is, newEnv, output)
+    repl newEnv
 
 main :: IO () 
-main = repl runtime
+main = repl initialEnv

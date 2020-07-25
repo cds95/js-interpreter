@@ -1,6 +1,5 @@
 module JS.Eval where 
 import JS.Core
-import JS.Compile
 
 import Data.HashMap.Strict as H (HashMap, insert, lookup, empty, fromList)
 import Control.Monad.Except
@@ -12,12 +11,10 @@ envLookupHelper sym env =
         _ -> case reads sym of 
             [(i , "")] -> Number i
 
-eval :: [String] -> JSState -> JSState
-eval (w:ws) s@(is, env, o) = 
-    case envLookupHelper w env of 
-        (Number a) -> eval ws ((a:is), env, o)
-        Define -> compile (w:ws) s
-
-eval [] s@(is, env, o) = (is, env, ("ok":o))
+eval :: Exp -> Env -> JSOutput 
+eval (VarExp varName) env = 
+    case H.lookup varName env of 
+        Just a -> (env, a)
+        Nothing -> (env, Nil)
 
     
