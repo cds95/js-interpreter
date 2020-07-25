@@ -5,7 +5,7 @@ import Control.Monad.Except
 import Control.Monad.State
 
 type Env = H.HashMap String Val
-data Val = Number Int |
+data Val = Number Integer |
            Boolean Bool |
            JSString String |
            Nil | 
@@ -25,4 +25,4 @@ instance Show Diagnostic where
        show (UnimplementedError a) = a ++ " is unimplemented"
        show (UndefinedError a) = a ++ " is undefined"
 
-type JSState = ([String], Env, [String])
+type JSState = ([Integer], Env, [String])
