@@ -16,19 +16,23 @@ instance Show Primitive where
 data Val = LetVal Primitive |
            ConstVal Primitive |
            Nil | 
-           Error String
+           Error String |
+           Output String
 
 instance Show Val where 
        show Nil = "null"
        show (ConstVal a) = show a 
        show (LetVal a) = show a 
        show (Error a) = a 
+       show (Output a) = a
 
 data Exp = LetExp String Exp |
            ConstAssignExp String Exp |
            VarExp String |
            ConstExp Val |
-           BinOpExp String Exp Exp 
+           BinOpExp String Exp Exp |
+           IfExp Exp [Exp] [Exp] 
+           deriving Show
 
 data Diagnostic = UnimplementedError String |
                   UndefinedError String |

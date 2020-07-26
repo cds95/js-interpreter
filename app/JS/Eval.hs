@@ -26,6 +26,20 @@ eval (BinOpExp operator e1 e2) env =
             where result = liftOp f valOne valTwo
         Nothing -> (env, Error (operator ++ " is not a valid operation"))
 
+eval (IfExp condExp ifBodyExps elseExps) env = 
+    let ifEnv = env 
+        (_, value) = eval condExp env 
+    in case value of
+        (LetVal (Boolean True)) -> handleIfBlock ifBodyExps ifEnv
+        (ConstVal (Boolean True)) -> handleIfBlock ifBodyExps ifEnv
+        _ -> handleIfBlock elseExps ifEnv
+
+handleIfBlock :: [Exp] -> Env -> JSOutput
+handleIfBlock ifBodyExps env = aux ifBodyExps env 
+    where aux [] env = (env, Nil)
+          aux (x:xs) env = aux xs newEnv
+            where (newEnv, _) = eval x env 
+
 assignVariableToEnv varName exp env = 
     case H.lookup varName env of 
         (Just (ConstVal _)) -> (env, (Error "Cannot reassign constant variable"))
