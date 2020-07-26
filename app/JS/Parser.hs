@@ -15,7 +15,6 @@ parseToExp :: [String] -> Exp
 parseToExp ("const":varName:"=":xs) = ConstAssignExp varName (parseToExp xs)
 parseToExp ("let":varName:"=":xs) = LetExp varName (parseToExp xs)
 parseToExp i@("if":xs) = parseIf i
-parseToExp (x:op:y) = BinOpExp op (parseToExp [x]) (parseToExp y)
 parseToExp [i] = 
   case i of 
     "true" -> ConstExp (ConstVal (Boolean True))
@@ -24,6 +23,20 @@ parseToExp [i] =
       case readMaybe i of 
         (Just a) -> ConstExp (ConstVal (Num a))
         _ -> VarExp i
+parseToExp f@("function":xs) = parseFunction f
+parseToExp (x:op:y) = BinOpExp op (parseToExp [x]) (parseToExp y)
+
+parseFunction :: [String] -> Exp
+parseFunction ("function":fnName:rest) = 
+  let (fnParams, fnStatementRest) = parseFnParams rest 
+      (fnBody, _) = getExpList fnStatementRest
+  in FunExp fnName fnParams fnBody
+
+parseFnParams :: [String] -> ([String], [String])
+parseFnParams ("(":xs) = aux xs []
+  where aux (")":rest) params = (params, rest)
+        aux (",":rest) params = aux rest params
+        aux (p:pRest) params = aux pRest (params ++ [p])
 
 parseIf ("if":xs) = 
   let (condExp, restOfIf) = getCondExp xs

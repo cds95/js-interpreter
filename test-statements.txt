@@ -1,0 +1,3 @@
+if ( true ) { let x = 10 ; let y = 20 ; let z = x + y ; z ; }
+
+function f ( p1 , p2 ) { let x = 2 ; }

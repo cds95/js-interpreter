@@ -34,6 +34,11 @@ eval (IfExp condExp ifBodyExps elseExps) env =
         (ConstVal (Boolean True)) -> handleIfBlock ifBodyExps ifEnv
         _ -> handleIfBlock elseExps ifEnv
 
+eval (FunExp fnName fnParams fnBody) env = 
+    let closure = CloVal fnParams fnBody env 
+        newEnv = H.insert fnName closure env 
+    in (newEnv, Nil)
+
 handleIfBlock :: [Exp] -> Env -> JSOutput
 handleIfBlock ifBodyExps env = aux ifBodyExps env 
     where aux [] env = (env, Nil)
