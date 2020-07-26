@@ -14,6 +14,7 @@ type Parser = ParsecT String () Identity
 parseToExp :: [String] -> Exp 
 parseToExp ("const":varName:"=":xs) = ConstAssignExp varName (parseToExp xs)
 parseToExp ("let":varName:"=":xs) = LetExp varName (parseToExp xs)
+parseToExp (x:op:y) = BinOpExp op (parseToExp [x]) (parseToExp y)
 parseToExp [i] = 
   case i of 
     "true" -> ConstExp (ConstVal (Boolean True))

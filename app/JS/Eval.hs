@@ -1,5 +1,6 @@
 module JS.Eval where 
 import JS.Core
+import JS.Runtime
 
 import Data.HashMap.Strict as H (HashMap, insert, lookup, empty, fromList)
 import Control.Monad.Except
@@ -16,6 +17,14 @@ eval (ConstExp val) e = (e, val)
 eval (LetExp varName exp) env = assignVariableToEnv varName exp env 
 
 eval (ConstAssignExp varName exp) env = assignVariableToEnv varName exp env
+
+eval (BinOpExp operator e1 e2) env = 
+    let (_, valOne) = eval e1 env 
+        (_, valTwo) = eval e2 env 
+    in case H.lookup operator runtimeOperations of 
+        (Just f) -> (env, result)
+            where result = liftOp f valOne valTwo
+        Nothing -> (env, Error (operator ++ " is not a valid operation"))
 
 assignVariableToEnv varName exp env = 
     case H.lookup varName env of 

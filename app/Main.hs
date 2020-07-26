@@ -14,7 +14,6 @@ repl env = do
     l <- getLine
     let (newEnv, output) = eval (parseToExp (words l)) env 
     print output
-    print newEnv
     repl newEnv
 
 main :: IO () 

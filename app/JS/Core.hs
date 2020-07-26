@@ -5,18 +5,30 @@ import Control.Monad.Except
 import Control.Monad.State
 
 type Env = H.HashMap String Val
-data Primitive = Num Integer | Boolean Bool deriving Show
+type PrimitiveOp = Primitive -> Primitive -> Primitive
+type RuntimeOperationsEnv = H.HashMap String PrimitiveOp
+data Primitive = Num Integer | Boolean Bool 
+
+instance Show Primitive where 
+       show (Num a) = show a 
+       show (Boolean a) = show a 
+
 data Val = LetVal Primitive |
            ConstVal Primitive |
            Nil | 
            Error String
-           deriving Show
+
+instance Show Val where 
+       show Nil = "null"
+       show (ConstVal a) = show a 
+       show (LetVal a) = show a 
+       show (Error a) = a 
 
 data Exp = LetExp String Exp |
            ConstAssignExp String Exp |
            VarExp String |
            ConstExp Val |
-           BinOp String Exp Exp 
+           BinOpExp String Exp Exp 
 
 data Diagnostic = UnimplementedError String |
                   UndefinedError String |
