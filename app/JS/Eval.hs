@@ -2,7 +2,7 @@ module JS.Eval where
 import JS.Core
 import JS.Runtime
 
-import Data.HashMap.Strict as H (HashMap, insert, lookup, empty, fromList)
+import Data.HashMap.Strict as H (HashMap, insert, lookup, empty, fromList, union)
 import Control.Monad.Except
 import Control.Monad.State
 
@@ -11,6 +11,9 @@ eval (VarExp varName) env =
     case H.lookup varName env of 
         Just a -> (env, a)
         Nothing -> (env, Nil)
+
+eval (IntExp v) e = (e, v)
+eval (BoolExp v) e = (e, v)
 
 eval (ConstExp val) e = (e, val)
 
@@ -30,20 +33,43 @@ eval (IfExp condExp ifBodyExps elseExps) env =
     let ifEnv = env 
         (_, value) = eval condExp env 
     in case value of
-        (LetVal (Boolean True)) -> handleIfBlock ifBodyExps ifEnv
-        (ConstVal (Boolean True)) -> handleIfBlock ifBodyExps ifEnv
-        _ -> handleIfBlock elseExps ifEnv
+        (LetVal (Boolean True)) -> evalMultipleExp ifBodyExps (ifEnv, Nil)
+        (ConstVal (Boolean True)) -> evalMultipleExp ifBodyExps (ifEnv, Nil)
+        _ -> evalMultipleExp elseExps (ifEnv, Nil)
 
 eval (FunExp fnName fnParams fnBody) env = 
     let closure = CloVal fnParams fnBody env 
         newEnv = H.insert fnName closure env 
     in (newEnv, Nil)
 
-handleIfBlock :: [Exp] -> Env -> JSOutput
-handleIfBlock ifBodyExps env = aux ifBodyExps env 
-    where aux [] env = (env, Nil)
-          aux (x:xs) env = aux xs newEnv
-            where (newEnv, _) = eval x env 
+eval (AppExp fnName params) env =
+    let fn = H.lookup fnName env 
+    in case fn of 
+        Nothing -> (env, (Error (fnName ++ " is not defined")))
+        Just (CloVal fnParams fnBody clenv) -> 
+            let fnEnv = getFnEnv fnParams params clenv 
+                combinedEnv = H.union clenv env
+            in evalMultipleExp fnBody (combinedEnv, Nil)
+
+eval (PrintExp var) env = 
+    let envVar = H.lookup var env 
+    in case envVar of 
+        Nothing -> (env, (Error "undefined"))
+        Just foundVal -> (env, foundVal) 
+
+getFnEnv :: [String] -> [Exp] -> Env -> Env
+getFnEnv args params env = aux args params env 
+    where aux [] [] env = env 
+          aux (argOne:argRest) (pOne:pRest) env =
+              let (_, evaledParam) = eval pOne env 
+                  newEnv = H.insert argOne evaledParam env
+              in aux argRest pRest newEnv
+
+evalMultipleExp :: [Exp] -> JSOutput -> JSOutput
+evalMultipleExp expList jsOutput = aux expList jsOutput 
+    where aux [] output = output
+          aux (x:xs) jsOutput@(env, val) = aux xs updatedJsOutput
+            where updatedJsOutput = eval x env 
 
 assignVariableToEnv varName exp env = 
     case H.lookup varName env of 

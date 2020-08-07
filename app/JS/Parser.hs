@@ -24,8 +24,12 @@ parseToExp [i] =
         (Just a) -> ConstExp (ConstVal (Num a))
         _ -> VarExp i
 parseToExp f@("function":xs) = parseFunction f
+parseToExp f@("print":xs) = parsePrint f
 parseToExp f@(x:"(":xs) = parseAppExp f
 parseToExp (x:op:y) = BinOpExp op (parseToExp [x]) (parseToExp y)
+
+parsePrint :: [String] -> Exp
+parsePrint ("print":"(":x:_) = PrintExp x
 
 parseFunction :: [String] -> Exp
 parseFunction ("function":fnName:rest) = 

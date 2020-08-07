@@ -12,7 +12,7 @@ repl :: Env -> IO ()
 repl env = do 
     putStr "js> "
     l <- getLine
-    let (newEnv, output) = eval (parseToExp (words (addSpacing l))) env 
+    let (newEnv, output) = eval (parseToExp (words l)) env 
     print output
     repl newEnv
 
