@@ -1,7 +1,10 @@
-if ( true ) { let x = 10 ; let y = 20 ; let z = x + y ; print ( z ) ; }
+if ( false ) { let x = 10 ; let y = 20 ; let z = x + y ; print ( z ) ; }
 
-function f ( p1 , p2 ) { let x = 2 ; }
+function g ( p1 , p2 ) { let x = p1 ; let y = p2 ; let z = x + y ; print ( z ) ; }
+function f ( p1 ) { let x = p1 ; print ( p1 ) ; }
 
 for ( var i = 0 ; i < 10 ; i ++ ) { let x = 10; }
 
 f ( 1 )
+
+g ( 2 , 5 )

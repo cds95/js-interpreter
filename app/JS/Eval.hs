@@ -48,8 +48,8 @@ eval (AppExp fnName params) env =
         Nothing -> (env, (Error (fnName ++ " is not defined")))
         Just (CloVal fnParams fnBody clenv) -> 
             let fnEnv = getFnEnv fnParams params clenv 
-                combinedEnv = H.union clenv env
-            in evalMultipleExp fnBody (combinedEnv, Nil)
+                (_, val) = evalMultipleExp fnBody (fnEnv, Nil)
+            in (env, val)
 
 eval (PrintExp var) env = 
     let envVar = H.lookup var env 

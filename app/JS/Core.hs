@@ -25,8 +25,8 @@ data Val = LetVal Primitive |
 
 instance Show Val where 
        show Nil = "null"
-       show (ConstVal a) = show a 
-       show (LetVal a) = show a 
+       show (ConstVal a) = show a
+       show (LetVal a) = show a
        show (Error a) = a 
        show (Output a) = a
        show (CloVal params exp env) = (show params)

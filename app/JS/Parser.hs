@@ -46,11 +46,11 @@ parseFnParams xx = aux xx []
 
 parseAppExp :: [String] -> Exp
 parseAppExp (fnName:rest)= 
-  let params = getFnParams rest 
+  let params = getFnAppParams rest 
   in AppExp fnName params
 
-getFnParams :: [String] -> [Exp]
-getFnParams xx = aux xx []
+getFnAppParams :: [String] -> [Exp]
+getFnAppParams xx = aux xx []
   where aux [] res = res
         aux (")":[]) res = res 
         aux (",":rest) res = aux rest res 

@@ -38,7 +38,8 @@ liftPrimitiveAndBoolean (Boolean a) (Boolean b) = Boolean (a && b)
 liftPrimitiveOrBoolean (Boolean a) (Boolean b) = Boolean (a || b)
 
 liftOp :: PrimitiveOp -> Val -> Val -> Val 
-liftOp f eOne eTwo = 
-    let (ConstVal cOne) = eOne 
-        (ConstVal cTwo) = eTwo 
-    in ConstVal (f cOne cTwo)
+liftOp f (ConstVal cOne) (ConstVal cTwo) = ConstVal (f cOne cTwo) 
+liftOp f (ConstVal cOne) (LetVal cTwo) = ConstVal (f cOne cTwo)
+liftOp f (LetVal cOne) (ConstVal cTwo) = ConstVal (f cOne cTwo)
+liftOp f (LetVal cOne) (LetVal cTwo) = ConstVal (f cOne cTwo)
+liftOp f (IntVal a) (IntVal b) = liftOp f (ConstVal (Num a)) (ConstVal (Num b))
