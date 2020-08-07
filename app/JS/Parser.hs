@@ -24,6 +24,7 @@ parseToExp [i] =
         (Just a) -> ConstExp (ConstVal (Num a))
         _ -> VarExp i
 parseToExp f@("function":xs) = parseFunction f
+parseToExp f@(x:"(":xs) = parseAppExp f
 parseToExp (x:op:y) = BinOpExp op (parseToExp [x]) (parseToExp y)
 
 parseFunction :: [String] -> Exp
@@ -33,10 +34,26 @@ parseFunction ("function":fnName:rest) =
   in FunExp fnName fnParams fnBody
 
 parseFnParams :: [String] -> ([String], [String])
-parseFnParams ("(":xs) = aux xs []
-  where aux (")":rest) params = (params, rest)
+parseFnParams xx = aux xx []
+  where aux ("(":xs) params = aux xs params
+        aux (")":rest) params = (params, rest)
         aux (",":rest) params = aux rest params
         aux (p:pRest) params = aux pRest (params ++ [p])
+
+parseAppExp :: [String] -> Exp
+parseAppExp (fnName:rest)= 
+  let params = getFnParams rest 
+  in AppExp fnName params
+
+getFnParams :: [String] -> [Exp]
+getFnParams xx = aux xx []
+  where aux [] res = res
+        aux (")":[]) res = res 
+        aux (",":rest) res = aux rest res 
+        aux ("(":rest) res = aux rest res 
+        aux ("true":rest) res = aux rest ([BoolExp (BoolVal True)] ++ res)
+        aux ("false":rest) res = aux rest ([BoolExp (BoolVal False)] ++ res)
+        aux (x:rest) res = aux rest ([IntExp (IntVal (read x))] ++ res)
 
 parseIf ("if":xs) = 
   let (condExp, restOfIf) = getCondExp xs
@@ -45,6 +62,8 @@ parseIf ("if":xs) =
     [] -> IfExp condExp ifBody []
     _ -> IfExp condExp ifBody elseBody
       where (elseBody, _) = getExpList elseStatement
+
+
 
 getCondExp :: [String] -> (Exp, [String]) 
 getCondExp xs = aux xs []

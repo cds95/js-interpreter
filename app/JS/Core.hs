@@ -18,7 +18,9 @@ data Val = LetVal Primitive |
            Nil | 
            Error String |
            Output String |
-           CloVal [String] [Exp] Env
+           CloVal [String] [Exp] Env |
+           IntVal Integer |
+           BoolVal Bool
 
 instance Show Val where 
        show Nil = "null"
@@ -27,6 +29,8 @@ instance Show Val where
        show (Error a) = a 
        show (Output a) = a
        show (CloVal params exp env) = (show params)
+       show (IntVal n) = show n 
+       show (BoolVal b) = show b
 
 data Exp = LetExp String Exp |
            ConstAssignExp String Exp |
@@ -34,7 +38,10 @@ data Exp = LetExp String Exp |
            ConstExp Val |
            BinOpExp String Exp Exp |
            IfExp Exp [Exp] [Exp] |
-           FunExp String [String] [Exp]
+           FunExp String [String] [Exp] |
+           AppExp String [Exp] |
+           IntExp Val |
+           BoolExp Val
            deriving Show
 
 data Diagnostic = UnimplementedError String |
