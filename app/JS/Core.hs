@@ -45,7 +45,8 @@ data Exp = LetExp String Exp |
            IntExp Val |
            BoolExp Val | 
            PrintExp String | 
-           ForExp Integer (Integer -> Bool) (Integer -> Integer) [Exp]
+           ForExp Integer (Integer -> Bool) (Integer -> Integer) [Exp] |
+           WhileExp Exp [Exp]
 
 instance Show Exp where 
        show (ForExp a _ _ exp) = show exp

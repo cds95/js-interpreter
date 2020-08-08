@@ -17,6 +17,7 @@ parseToExp f@("let":varName:"=":"(":rest) = parseArrowFunc f
 parseToExp ("const":varName:"=":xs) = ConstAssignExp varName (parseToExp xs)
 parseToExp ("let":varName:"=":xs) = LetExp varName (parseToExp xs)
 parseToExp i@("if":xs) = parseIf i
+parseToExp f@("while":xs) = parseWhile f
 parseToExp [i] = 
   case i of 
     "true" -> ConstExp (ConstVal (Boolean True))
@@ -62,6 +63,17 @@ getShouldContinueLoop (x:op:endIdx:";":rest) =
 getIdxUpdateFn :: [String] -> (Integer -> Integer, [String])
 getIdxUpdateFn (x:"++":rest) = ((\x -> x + 1), rest)
 getIdxUpdateFn (x:"--":rest) = ((\x -> x - 1), rest)
+
+parseWhile :: [String] -> Exp 
+parseWhile ("while":xs) = 
+  let (condExp, rest) = getWhileCondExp xs 
+      (whileBody, _) = getExpList rest 
+  in WhileExp condExp whileBody
+
+getWhileCondExp xx = aux xx []
+  where aux (")":rest) res = ((parseToExp res), rest)
+        aux ("(":xs) res = aux xs res 
+        aux (x:xs) res = aux xs (res ++ [x])
 
 parsePrint :: [String] -> Exp
 parsePrint ("print":"(":x:_) = PrintExp x

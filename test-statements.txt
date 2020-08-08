@@ -12,3 +12,4 @@ g ( 2 , 5 )
 let x = 2
 
 let f = ( p1 , p2 ) => { let x = p1 ; let y = p2 ; let z = x + y ; print ( z ) ; }
+while ( x < 4 ) { let x = x + 1 ; print ( x ) ; }

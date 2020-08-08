@@ -59,14 +59,22 @@ eval (PrintExp var) env =
         Nothing -> (env, [(Error "undefined")])
         Just foundVal -> (env, [foundVal]) 
 
+eval w@(WhileExp whileExp whileBody) env = whileLoopHelper w env []
+
 forLoopHelper (ForExp currIdx shouldContinueLoop idxUpdater exps) env res = 
     case shouldContinueLoop currIdx of
         False -> (env, res)
         _ -> 
             let (newEnv, bodyRes) = evalMultipleExp exps (env, res)
                 updatedIdx = idxUpdater currIdx
-                updatedRes = bodyRes
-            in forLoopHelper (ForExp updatedIdx shouldContinueLoop idxUpdater exps) newEnv updatedRes 
+            in forLoopHelper (ForExp updatedIdx shouldContinueLoop idxUpdater exps) newEnv bodyRes 
+
+whileLoopHelper (WhileExp condExp exps) env res = 
+    case eval condExp env of 
+        (newEnv, [(ConstVal (Boolean False))]) -> (env, res)
+        _ -> whileLoopHelper (WhileExp condExp exps) newEnv bodyRes
+            where (newEnv, bodyRes) = evalMultipleExp exps (env, res)
+            
 
 getFnEnv :: [String] -> [Exp] -> Env -> Env
 getFnEnv args params env = aux args params env 
