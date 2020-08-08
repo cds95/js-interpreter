@@ -13,6 +13,7 @@ import Data.HashMap.Strict as H (HashMap, lookup, fromList)
 type Parser = ParsecT String () Identity
 
 parseToExp :: [String] -> Exp 
+parseToExp f@("let":varName:"=":"(":rest) = parseArrowFunc f
 parseToExp ("const":varName:"=":xs) = ConstAssignExp varName (parseToExp xs)
 parseToExp ("let":varName:"=":xs) = LetExp varName (parseToExp xs)
 parseToExp i@("if":xs) = parseIf i
@@ -29,6 +30,12 @@ parseToExp f@("print":xs) = parsePrint f
 parseToExp f@("for":xs) = parseFor f
 parseToExp f@(x:"(":xs) = parseAppExp f
 parseToExp (x:op:y) = BinOpExp op (parseToExp [x]) (parseToExp y)
+
+parseArrowFunc :: [String] -> Exp 
+parseArrowFunc ("let":fnName:"=":rest) = 
+  let (fnParams, ("=>":fnBodyStr)) = parseFnParams rest 
+      (fnBody, _) = getExpList fnBodyStr
+  in FunExp fnName fnParams fnBody
 
 loopOperations = H.fromList [
                     ("<", (\x y -> y < x)),

@@ -88,11 +88,12 @@ assignVariableToEnv varName exp env valConstructor =
         _ -> 
             let (_, [evaledArg]) = eval exp env 
             in case evaledArg of 
-                (ConstVal a) -> 
-                    let newEnv = H.insert varName (valConstructor a) env 
-                    in (newEnv, [Nil])
-                (LetVal a) -> 
-                    let newEnv = H.insert varName (valConstructor a) env 
-                    in (newEnv, [Nil])
+                (ConstVal a) -> assignVariableToEnvHelper a varName valConstructor env 
+                (LetVal a) -> assignVariableToEnvHelper a varName valConstructor env 
+                (IntVal a) -> assignVariableToEnvHelper (Num a) varName valConstructor env 
+
+assignVariableToEnvHelper a varName valConstructor env =  
+    let newEnv = H.insert varName (valConstructor a) env 
+    in (newEnv, [Nil])
 
     
