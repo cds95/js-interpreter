@@ -111,8 +111,8 @@ parseIf ("if":xs) =
       (ifBody, elseStatement) = getExpList restOfIf 
   in case elseStatement of 
     [] -> IfExp condExp ifBody []
-    _ -> IfExp condExp ifBody elseBody
-      where (elseBody, _) = getExpList elseStatement
+    ("else":restOfElse) -> IfExp condExp ifBody elseBody
+      where (elseBody, _) = getExpList restOfElse
 
 
 

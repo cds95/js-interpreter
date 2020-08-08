@@ -14,4 +14,5 @@ let x = 2
 let f = ( p1 , p2 ) => { let x = p1 ; let y = p2 ; let z = x + y ; print ( z ) ; }
 while ( x < 4 ) { let x = x + 1 ; print ( x ) ; }
 
-if ( x < 4 ) { for ( var i = 0 ; i <= 10 ; i ++ ) { let x = 10 ; print ( x ) ; } }
+if ( x > 4 ) { print ( x ) ; } else { print ( y ) ; }
+
