@@ -59,15 +59,14 @@ eval (PrintExp var) env =
         Nothing -> (env, [(Error "undefined")])
         Just foundVal -> (env, [foundVal]) 
 
-forLoopHelper (ForExp currIdx loopHasEnded idxUpdater exps) env res = 
-    case loopHasEnded currIdx of
+forLoopHelper (ForExp currIdx shouldContinueLoop idxUpdater exps) env res = 
+    case shouldContinueLoop currIdx of
         False -> (env, res)
         _ -> 
             let (newEnv, bodyRes) = evalMultipleExp exps (env, res)
                 updatedIdx = idxUpdater currIdx
-                updatedRes = res ++ bodyRes
-            in forLoopHelper (ForExp updatedIdx loopHasEnded idxUpdater exps) newEnv updatedRes 
-
+                updatedRes = bodyRes
+            in forLoopHelper (ForExp updatedIdx shouldContinueLoop idxUpdater exps) newEnv updatedRes 
 
 getFnEnv :: [String] -> [Exp] -> Env -> Env
 getFnEnv args params env = aux args params env 

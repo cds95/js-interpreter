@@ -31,24 +31,24 @@ parseToExp f@(x:"(":xs) = parseAppExp f
 parseToExp (x:op:y) = BinOpExp op (parseToExp [x]) (parseToExp y)
 
 loopOperations = H.fromList [
-                    ("<", (\x y -> x < y)),
-                    ("<=", (\x y -> x <= y)),
-                    (">", (\x y -> x > y)),
-                    (">=", (\x y -> x >= y))
+                    ("<", (\x y -> y < x)),
+                    ("<=", (\x y -> y <= x)),
+                    (">", (\x y -> y > x)),
+                    (">=", (\x y -> y >= x))
                 ]
 
 parseFor :: [String] -> Exp 
 parseFor ("for":xs) = 
   let (startIdx, restOne) = getStartIdx xs
-      (endFn, restTwo) = getEndFn restOne
-      (idxUpdateFn, restThree) = getIdxUpdateFn restTwo
+      (shouldContinueLoop, restTwo) = getShouldContinueLoop restOne
+      (idxUpdateFn, (")":restThree)) = getIdxUpdateFn restTwo
       (loopBody, _) = getExpList restThree
-  in ForExp startIdx endFn idxUpdateFn loopBody
+  in ForExp startIdx shouldContinueLoop idxUpdateFn loopBody
 
-getStartIdx ("(":"var":x:"=":startIdx:";":rest) = ((read x), rest)
+getStartIdx ("(":"var":x:"=":startIdx:";":rest) = ((read startIdx), rest)
 
-getEndFn :: [String] -> (Integer -> Bool, [String])
-getEndFn (x:op:endIdx:";":rest) =
+getShouldContinueLoop :: [String] -> (Integer -> Bool, [String])
+getShouldContinueLoop (x:op:endIdx:";":rest) =
   case H.lookup op loopOperations of 
     Just loopFn -> ((loopFn (read endIdx)), rest)
 

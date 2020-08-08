@@ -47,6 +47,9 @@ data Exp = LetExp String Exp |
            PrintExp String | 
            ForExp Integer (Integer -> Bool) (Integer -> Integer) [Exp]
 
+instance Show Exp where 
+       show (ForExp a _ _ exp) = show exp
+
 data Diagnostic = UnimplementedError String |
                   UndefinedError String |
                   AssigningToConstantError String 
