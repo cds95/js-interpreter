@@ -45,7 +45,7 @@ data Exp = LetExp String Exp |
            IntExp Val |
            BoolExp Val | 
            PrintExp String | 
-           ForExp Integer (Integer -> Integer -> Bool) (Integer -> Integer) [Exp]
+           ForExp Integer (Integer -> Bool) (Integer -> Integer) [Exp]
 
 data Diagnostic = UnimplementedError String |
                   UndefinedError String |

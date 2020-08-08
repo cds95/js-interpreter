@@ -47,10 +47,10 @@ parseFor ("for":xs) =
 
 getStartIdx ("(":"var":x:"=":startIdx:";":rest) = ((read x), rest)
 
-getEndFn :: [String] -> (Integer -> Integer -> Bool, [String])
+getEndFn :: [String] -> (Integer -> Bool, [String])
 getEndFn (x:op:endIdx:";":rest) =
   case H.lookup op loopOperations of 
-    Just loopFn -> (loopFn, rest)
+    Just loopFn -> ((loopFn (read endIdx)), rest)
 
 getIdxUpdateFn :: [String] -> (Integer -> Integer, [String])
 getIdxUpdateFn (x:"++":rest) = ((\x -> x + 1), rest)
