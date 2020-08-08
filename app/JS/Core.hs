@@ -55,4 +55,4 @@ instance Show Diagnostic where
        show (UnimplementedError a) = a ++ " is unimplemented"
        show (UndefinedError a) = a ++ " is undefined"
 
-type JSOutput = (Env, Val)
+type JSOutput = (Env, [Val])

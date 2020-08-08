@@ -9,74 +9,74 @@ import Control.Monad.State
 eval :: Exp -> Env -> JSOutput 
 eval (VarExp varName) env = 
     case H.lookup varName env of 
-        Just a -> (env, a)
-        Nothing -> (env, Nil)
+        Just a -> (env, [a])
+        Nothing -> (env, [Nil])
 
-eval (IntExp v) e = (e, v)
-eval (BoolExp v) e = (e, v)
+eval (IntExp v) e = (e, [v])
+eval (BoolExp v) e = (e, [v])
 
-eval (ConstExp val) e = (e, val)
+eval (ConstExp val) e = (e, [val])
 
 eval (LetExp varName exp) env = assignVariableToEnv varName exp env 
 
 eval (ConstAssignExp varName exp) env = assignVariableToEnv varName exp env
 
 eval (BinOpExp operator e1 e2) env = 
-    let (_, valOne) = eval e1 env 
-        (_, valTwo) = eval e2 env 
+    let (_, [valOne]) = eval e1 env 
+        (_, [valTwo]) = eval e2 env 
     in case H.lookup operator runtimeOperations of 
-        (Just f) -> (env, result)
+        (Just f) -> (env, [result])
             where result = liftOp f valOne valTwo
-        Nothing -> (env, Error (operator ++ " is not a valid operation"))
+        Nothing -> (env, [Error (operator ++ " is not a valid operation")])
 
 eval (IfExp condExp ifBodyExps elseExps) env = 
     let ifEnv = env 
-        (_, value) = eval condExp env 
+        (_, [value]) = eval condExp env 
     in case value of
-        (LetVal (Boolean True)) -> evalMultipleExp ifBodyExps (ifEnv, Nil)
-        (ConstVal (Boolean True)) -> evalMultipleExp ifBodyExps (ifEnv, Nil)
-        _ -> evalMultipleExp elseExps (ifEnv, Nil)
+        (LetVal (Boolean True)) -> evalMultipleExp ifBodyExps (ifEnv, [Nil])
+        (ConstVal (Boolean True)) -> evalMultipleExp ifBodyExps (ifEnv, [Nil])
+        _ -> evalMultipleExp elseExps (ifEnv, [Nil])
 
 eval (FunExp fnName fnParams fnBody) env = 
     let closure = CloVal fnParams fnBody env 
         newEnv = H.insert fnName closure env 
-    in (newEnv, Nil)
+    in (newEnv, [Nil])
 
 eval (AppExp fnName params) env =
     let fn = H.lookup fnName env 
     in case fn of 
-        Nothing -> (env, (Error (fnName ++ " is not defined")))
+        Nothing -> (env, [(Error (fnName ++ " is not defined"))])
         Just (CloVal fnParams fnBody clenv) -> 
             let fnEnv = getFnEnv fnParams params clenv 
-                (_, val) = evalMultipleExp fnBody (fnEnv, Nil)
+                (_, val) = evalMultipleExp fnBody (fnEnv, [Nil])
             in (env, val)
 
 eval (PrintExp var) env = 
     let envVar = H.lookup var env 
     in case envVar of 
-        Nothing -> (env, (Error "undefined"))
-        Just foundVal -> (env, foundVal) 
+        Nothing -> (env, [(Error "undefined")])
+        Just foundVal -> (env, [foundVal]) 
 
 getFnEnv :: [String] -> [Exp] -> Env -> Env
 getFnEnv args params env = aux args params env 
     where aux [] [] env = env 
           aux (argOne:argRest) (pOne:pRest) env =
-              let (_, evaledParam) = eval pOne env 
+              let (_, [evaledParam]) = eval pOne env 
                   newEnv = H.insert argOne evaledParam env
               in aux argRest pRest newEnv
 
 evalMultipleExp :: [Exp] -> JSOutput -> JSOutput
 evalMultipleExp expList jsOutput = aux expList jsOutput 
     where aux [] output = output
-          aux (x:xs) jsOutput@(env, val) = aux xs updatedJsOutput
-            where updatedJsOutput = eval x env 
+          aux (x:xs) jsOutput@(env, val) = aux xs (newEnv, (val ++ evaledVal))
+            where (newEnv, evaledVal) = eval x env 
 
 assignVariableToEnv varName exp env = 
     case H.lookup varName env of 
-        (Just (ConstVal _)) -> (env, (Error "Cannot reassign constant variable"))
+        (Just (ConstVal _)) -> (env, [(Error "Cannot reassign constant variable")])
         _ -> 
-            let (_, evaledVar) = eval exp env 
+            let (_, [evaledVar]) = eval exp env 
                 newEnv = H.insert varName evaledVar env 
-            in (newEnv, evaledVar)
+            in (newEnv, [Nil])
 
     

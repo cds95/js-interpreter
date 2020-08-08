@@ -22,7 +22,7 @@ parseToExp [i] =
     "false" -> ConstExp (ConstVal (Boolean False))
     _ -> 
       case readMaybe i of 
-        (Just a) -> ConstExp (ConstVal (Num a))
+        (Just a) -> ConstExp (LetVal (Num a))
         _ -> VarExp i
 parseToExp f@("function":xs) = parseFunction f
 parseToExp f@("print":xs) = parsePrint f

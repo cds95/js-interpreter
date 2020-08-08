@@ -1,4 +1,4 @@
-if ( false ) { let x = 10 ; let y = 20 ; let z = x + y ; print ( z ) ; }
+if ( true ) { let x = 10 ; let y = 20 ; print ( y ) ; let z = x + y ; print ( z ) ; }
 
 function g ( p1 , p2 ) { let x = p1 ; let y = p2 ; let z = x + y ; print ( z ) ; }
 function f ( p1 ) { let x = p1 ; print ( p1 ) ; }
@@ -8,3 +8,5 @@ for ( var i = 0 ; i < 10 ; i ++ ) { let x = 10; }
 f ( 1 )
 
 g ( 2 , 5 )
+
+let x = 2
