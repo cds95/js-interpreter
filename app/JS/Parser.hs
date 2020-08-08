@@ -8,6 +8,7 @@ import Text.ParserCombinators.Parsec hiding (Parser, State)
 import Text.Parsec.Prim hiding (State, try)
 import Text.Read
 import Control.Monad
+import Data.HashMap.Strict as H (HashMap, lookup, fromList)
 
 type Parser = ParsecT String () Identity
 
@@ -25,8 +26,35 @@ parseToExp [i] =
         _ -> VarExp i
 parseToExp f@("function":xs) = parseFunction f
 parseToExp f@("print":xs) = parsePrint f
+parseToExp f@("for":xs) = parseFor f
 parseToExp f@(x:"(":xs) = parseAppExp f
 parseToExp (x:op:y) = BinOpExp op (parseToExp [x]) (parseToExp y)
+
+loopOperations = H.fromList [
+                    ("<", (\x y -> x < y)),
+                    ("<=", (\x y -> x <= y)),
+                    (">", (\x y -> x > y)),
+                    (">=", (\x y -> x >= y))
+                ]
+
+parseFor :: [String] -> Exp 
+parseFor ("for":xs) = 
+  let (startIdx, restOne) = getStartIdx xs
+      (endFn, restTwo) = getEndFn restOne
+      (idxUpdateFn, restThree) = getIdxUpdateFn restTwo
+      (loopBody, _) = getExpList restThree
+  in ForExp startIdx endFn idxUpdateFn loopBody
+
+getStartIdx ("(":"var":x:"=":startIdx:";":rest) = ((read x), rest)
+
+getEndFn :: [String] -> (Integer -> Integer -> Bool, [String])
+getEndFn (x:op:endIdx:";":rest) =
+  case H.lookup op loopOperations of 
+    Just loopFn -> (loopFn, rest)
+
+getIdxUpdateFn :: [String] -> (Integer -> Integer, [String])
+getIdxUpdateFn (x:"++":rest) = ((\x -> x + 1), rest)
+getIdxUpdateFn (x:"--":rest) = ((\x -> x - 1), rest)
 
 parsePrint :: [String] -> Exp
 parsePrint ("print":"(":x:_) = PrintExp x
