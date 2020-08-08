@@ -37,6 +37,8 @@ eval (IfExp condExp ifBodyExps elseExps) env =
         (ConstVal (Boolean True)) -> evalMultipleExp ifBodyExps (ifEnv, [Nil])
         _ -> evalMultipleExp elseExps (ifEnv, [Nil])
 
+eval f@(ForExp currIdx loopHasEnded idxUpdater exps) env = forLoopHelper f env []
+
 eval (FunExp fnName fnParams fnBody) env = 
     let closure = CloVal fnParams fnBody env 
         newEnv = H.insert fnName closure env 
@@ -56,6 +58,16 @@ eval (PrintExp var) env =
     in case envVar of 
         Nothing -> (env, [(Error "undefined")])
         Just foundVal -> (env, [foundVal]) 
+
+forLoopHelper (ForExp currIdx loopHasEnded idxUpdater exps) env res = 
+    case loopHasEnded currIdx of
+        False -> (env, res)
+        _ -> 
+            let (newEnv, bodyRes) = evalMultipleExp exps (env, res)
+                updatedIdx = idxUpdater currIdx
+                updatedRes = res ++ bodyRes
+            in forLoopHelper (ForExp updatedIdx loopHasEnded idxUpdater exps) newEnv updatedRes 
+
 
 getFnEnv :: [String] -> [Exp] -> Env -> Env
 getFnEnv args params env = aux args params env 
