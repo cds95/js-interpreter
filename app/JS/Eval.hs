@@ -17,9 +17,9 @@ eval (BoolExp v) e = (e, [v])
 
 eval (ConstExp val) e = (e, [val])
 
-eval (LetExp varName exp) env = assignVariableToEnv varName exp env 
+eval (LetExp varName exp) env = assignVariableToEnv varName exp env LetVal
 
-eval (ConstAssignExp varName exp) env = assignVariableToEnv varName exp env
+eval (ConstAssignExp varName exp) env = assignVariableToEnv varName exp env ConstVal
 
 eval (BinOpExp operator e1 e2) env = 
     let (_, [valOne]) = eval e1 env 
@@ -71,12 +71,17 @@ evalMultipleExp expList jsOutput = aux expList jsOutput
           aux (x:xs) jsOutput@(env, val) = aux xs (newEnv, (val ++ evaledVal))
             where (newEnv, evaledVal) = eval x env 
 
-assignVariableToEnv varName exp env = 
+assignVariableToEnv varName exp env valConstructor = 
     case H.lookup varName env of 
         (Just (ConstVal _)) -> (env, [(Error "Cannot reassign constant variable")])
         _ -> 
-            let (_, [evaledVar]) = eval exp env 
-                newEnv = H.insert varName evaledVar env 
-            in (newEnv, [Nil])
+            let (_, [evaledArg]) = eval exp env 
+            in case evaledArg of 
+                (ConstVal a) -> 
+                    let newEnv = H.insert varName (valConstructor a) env 
+                    in (newEnv, [Nil])
+                (LetVal a) -> 
+                    let newEnv = H.insert varName (valConstructor a) env 
+                    in (newEnv, [Nil])
 
     
