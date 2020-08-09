@@ -66,7 +66,7 @@ forLoopHelper (ForExp currIdx shouldContinueLoop idxUpdater exps) env res =
         False -> (env, res)
         _ -> 
             let bodyEnv = H.insert "i" (IntVal currIdx) env
-                (newEnv, (x:bodyRes)) = evalMultipleExp exps (env, res)
+                (newEnv, (x:bodyRes)) = evalMultipleExp exps (bodyEnv, res)
             in case x of 
                 BreakVal -> (newEnv, bodyRes)
                 _ -> forLoopHelper (ForExp updatedIdx shouldContinueLoop idxUpdater exps) newEnv (x:bodyRes) 

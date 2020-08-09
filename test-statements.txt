@@ -1,23 +1,27 @@
-let x = 2
+const testVar = 2
+let testVar = 1
+print ( testVar )
 
 // Conditionals
 
-if ( x > 4 ) { print ( x ) ; } else { print ( y ) ; }
-if ( true ) { let x = 10 ; let y = 20 ; print ( y ) ; let z = x + y ; print ( z ) ; }
+let x = 5
+if ( x > 4 ) { print ( x ) ; }
+if ( x > 4 ) { let vOne = 10 ; let vTwo = 20 ; print ( vTwo ) ; let z = vOne + vTwo ; print ( z ) ; }
 
 // Functions
-function g ( p1 , p2 ) { let x = p1 ; let y = p2 ; let z = x + y ; print ( z ) ; }
-function f ( p1 ) { let x = p1 ; print ( p1 ) ; }
-let f = ( p1 , p2 ) => { let x = p1 ; let y = p2 ; let z = x + y ; print ( z ) ; }
+function f ( p1 , p2 ) { let fOne = p1 ; let fTwo = p2 ; let z = fOne + fTwo ; print ( z ) ; }
+let fArrow = ( p1 , p2 ) => { let fOne = p1 ; let fTwo = p2 ; let z = fOne + fTwo ; print ( z ) ; }
 
-f ( 1 )
+f ( 1 , 4 )
 
-g ( 2 , 5 )
+fArrow ( 1 , 4 )
 
-// For Loops
-for ( var i = 0 ; i <= 10 ; i ++ ) l{ let x = x + 1 l; if ( x > 4 ) { print ( x ) ; } l; l}
-for ( var i = 0 ; i <= 10 ; i ++ ) l{ if ( x > 4 ) { break ; } l; print ( x ) l; let x = x + 1 l; l}
-for ( var i = 0 ; i < 10 ; i ++ ) l{ print ( i ) l; l}
+let x = 0 
 
 // While Loops
-while ( x < 4 ) l{ let x = x + 1 l; print ( x ) l; l}
+while ( x < 4 ) l{ print ( x ) l; let x = x + 1 l; l}
+
+// For Loops
+for ( var i = 0 ; i < 10 ; i ++ ) l{ print ( i ) l; l}
+for ( var i = 0 ; i <= 10 ; i ++ ) l{ let x = x + 1 l; if ( x > 4 ) { print ( x ) ; } l; l}
+for ( var i = 0 ; i <= 10 ; i ++ ) l{ if ( x > 4 ) { break ; } l; print ( x ) l; let x = x + 1 l; l}
