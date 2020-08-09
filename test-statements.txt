@@ -3,7 +3,8 @@ if ( true ) { let x = 10 ; let y = 20 ; print ( y ) ; let z = x + y ; print ( z 
 function g ( p1 , p2 ) { let x = p1 ; let y = p2 ; let z = x + y ; print ( z ) ; }
 function f ( p1 ) { let x = p1 ; print ( p1 ) ; }
 
-for ( var i = 0 ; i <= 10 ; i ++ ) l{ if ( i > 4 ) { print ( i ) ; } l; l}
+for ( var i = 0 ; i <= 10 ; i ++ ) l{ let x = x + 1 l; if ( x > 4 ) { print ( x ) ; } l; l}
+for ( var i = 0 ; i <= 10 ; i ++ ) l{ print ( i ) l; l}
 
 f ( 1 )
 

@@ -115,8 +115,6 @@ parseIf ("if":xs) =
     ("else":restOfElse) -> IfExp condExp ifBody elseBody
       where (elseBody, _) = getExpList restOfElse
 
-
-
 getCondExp :: [String] -> (Exp, [String]) 
 getCondExp xs = aux xs []
   where aux (")":xs) condition = (parseToExp condition, xs)

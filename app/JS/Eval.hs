@@ -31,12 +31,11 @@ eval (BinOpExp operator e1 e2) env =
         Nothing -> (env, [Error (operator ++ " is not a valid operation")])
 
 eval (IfExp condExp ifBodyExps elseExps) env = 
-    let ifEnv = env 
-        (_, [value]) = eval condExp env 
+    let (_, [value]) = eval condExp env 
     in case value of
-        (LetVal (Boolean True)) -> evalMultipleExp ifBodyExps (ifEnv, [Nil])
-        (ConstVal (Boolean True)) -> evalMultipleExp ifBodyExps (ifEnv, [Nil])
-        _ -> evalMultipleExp elseExps (ifEnv, [Nil])
+        (LetVal (Boolean True)) -> evalMultipleExp ifBodyExps (env, [Nil])
+        (ConstVal (Boolean True)) -> evalMultipleExp ifBodyExps (env, [Nil])
+        _ -> evalMultipleExp elseExps (env, [Nil])
 
 eval f@(ForExp currIdx loopHasEnded idxUpdater exps) env = forLoopHelper f env []
 
@@ -67,9 +66,11 @@ forLoopHelper (ForExp currIdx shouldContinueLoop idxUpdater exps) env res =
         False -> (env, res)
         _ -> 
             let bodyEnv = H.insert "i" (IntVal currIdx) env
-                (newEnv, bodyRes) = evalMultipleExp exps (bodyEnv, res)
-                updatedIdx = idxUpdater currIdx
-            in forLoopHelper (ForExp updatedIdx shouldContinueLoop idxUpdater exps) newEnv bodyRes 
+                (newEnv, (x:bodyRes)) = evalMultipleExp exps (bodyEnv, res)
+            in case x of 
+                BreakVal -> (newEnv, bodyRes)
+                _ -> forLoopHelper (ForExp updatedIdx shouldContinueLoop idxUpdater exps) newEnv (x:bodyRes) 
+                    where updatedIdx = idxUpdater currIdx
 
 whileLoopHelper (WhileExp condExp exps) env res = 
     case eval condExp env of 
@@ -92,7 +93,7 @@ evalMultipleExp expList jsOutput = aux expList jsOutput
           aux (x:xs) jsOutput@(env, val) =
             let (newEnv, evaledVal) = eval x env 
             in case evaledVal of 
-                [BreakVal] -> (newEnv, evaledVal)
+                [BreakVal] -> (newEnv, (BreakVal:evaledVal))
                 _ -> aux xs (newEnv, (val ++ evaledVal))
 
 assignVariableToEnv varName exp env valConstructor = 
