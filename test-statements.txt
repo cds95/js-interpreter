@@ -3,7 +3,7 @@ if ( true ) { let x = 10 ; let y = 20 ; print ( y ) ; let z = x + y ; print ( z 
 function g ( p1 , p2 ) { let x = p1 ; let y = p2 ; let z = x + y ; print ( z ) ; }
 function f ( p1 ) { let x = p1 ; print ( p1 ) ; }
 
-for ( var i = 0 ; i <= 10 ; i ++ ) { print ( i ) ; }
+for ( var i = 0 ; i <= 10 ; i ++ ) l{ if ( i > 4 ) { print ( i ) ; } l; l}
 
 f ( 1 )
 
@@ -12,7 +12,7 @@ g ( 2 , 5 )
 let x = 2
 
 let f = ( p1 , p2 ) => { let x = p1 ; let y = p2 ; let z = x + y ; print ( z ) ; }
-while ( x < 4 ) { let x = x + 1 ; print ( x ) ; }
+while ( x < 4 ) l{ let x = x + 1 l; print ( x ) l; l}
 
 if ( x > 4 ) { print ( x ) ; } else { print ( y ) ; }
 

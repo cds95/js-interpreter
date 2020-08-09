@@ -29,6 +29,7 @@ parseToExp [i] =
 parseToExp f@("function":xs) = parseFunction f
 parseToExp f@("print":xs) = parsePrint f
 parseToExp f@("for":xs) = parseFor f
+parseToExp f@("break":xs) = BreakExp
 parseToExp f@(x:"(":xs) = parseAppExp f
 parseToExp (x:op:y) = BinOpExp op (parseToExp [x]) (parseToExp y)
 
@@ -50,7 +51,7 @@ parseFor ("for":xs) =
   let (startIdx, restOne) = getStartIdx xs
       (shouldContinueLoop, restTwo) = getShouldContinueLoop restOne
       (idxUpdateFn, (")":restThree)) = getIdxUpdateFn restTwo
-      (loopBody, _) = getExpList restThree
+      (loopBody, _) = getExpListLoop restThree
   in ForExp startIdx shouldContinueLoop idxUpdateFn loopBody
 
 getStartIdx ("(":"var":x:"=":startIdx:";":rest) = ((read startIdx), rest)
@@ -67,7 +68,7 @@ getIdxUpdateFn (x:"--":rest) = ((\x -> x - 1), rest)
 parseWhile :: [String] -> Exp 
 parseWhile ("while":xs) = 
   let (condExp, rest) = getWhileCondExp xs 
-      (whileBody, _) = getExpList rest 
+      (whileBody, _) = getExpListLoop rest 
   in WhileExp condExp whileBody
 
 getWhileCondExp xx = aux xx []
@@ -121,6 +122,13 @@ getCondExp xs = aux xs []
   where aux (")":xs) condition = (parseToExp condition, xs)
         aux ("(":xs) condition = aux xs condition
         aux (x:xs) condition = aux xs (condition ++ [x])
+
+getExpListLoop :: [String] -> ([Exp], [String])
+getExpListLoop xs = aux xs [] []
+  where aux ("l{":xs) currStatement expList = aux xs currStatement expList
+        aux ("l}":xs) currStatement expList = (expList, xs)
+        aux ("l;":xs) currStatement expList = aux xs [] (expList ++ [parseToExp currStatement])
+        aux (x:xs) currStatement expList = aux xs (currStatement ++ [x]) expList
 
 getExpList :: [String] -> ([Exp], [String])
 getExpList xs = aux xs [] []

@@ -21,7 +21,8 @@ data Val = LetVal Primitive |
            CloVal [String] [Exp] Env |
            IntVal Integer |
            BoolVal Bool | 
-           StringVal String
+           StringVal String | 
+           BreakVal
 
 instance Show Val where 
        show Nil = "null"
@@ -46,7 +47,8 @@ data Exp = LetExp String Exp |
            BoolExp Val | 
            PrintExp String | 
            ForExp Integer (Integer -> Bool) (Integer -> Integer) [Exp] |
-           WhileExp Exp [Exp]
+           WhileExp Exp [Exp] | 
+           BreakExp 
 
 instance Show Exp where 
        show (ForExp a _ _ exp) = show exp

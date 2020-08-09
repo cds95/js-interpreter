@@ -14,6 +14,7 @@ eval (VarExp varName) env =
 
 eval (IntExp v) e = (e, [v])
 eval (BoolExp v) e = (e, [v])
+eval BreakExp e = (e, [BreakVal])
 
 eval (ConstExp val) e = (e, [val])
 
@@ -88,8 +89,11 @@ getFnEnv args params env = aux args params env
 evalMultipleExp :: [Exp] -> JSOutput -> JSOutput
 evalMultipleExp expList jsOutput = aux expList jsOutput 
     where aux [] output = output
-          aux (x:xs) jsOutput@(env, val) = aux xs (newEnv, (val ++ evaledVal))
-            where (newEnv, evaledVal) = eval x env 
+          aux (x:xs) jsOutput@(env, val) =
+            let (newEnv, evaledVal) = eval x env 
+            in case evaledVal of 
+                [BreakVal] -> (newEnv, evaledVal)
+                _ -> aux xs (newEnv, (val ++ evaledVal))
 
 assignVariableToEnv varName exp env valConstructor = 
     case H.lookup varName env of 
