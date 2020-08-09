@@ -13,6 +13,7 @@ import Data.HashMap.Strict as H (HashMap, lookup, fromList)
 type Parser = ParsecT String () Identity
 
 parseToExp :: [String] -> Exp 
+parseToExp f@("break":xs) = BreakExp
 parseToExp f@("let":varName:"=":"(":rest) = parseArrowFunc f
 parseToExp ("const":varName:"=":xs) = ConstAssignExp varName (parseToExp xs)
 parseToExp ("let":varName:"=":xs) = LetExp varName (parseToExp xs)
@@ -29,7 +30,6 @@ parseToExp [i] =
 parseToExp f@("function":xs) = parseFunction f
 parseToExp f@("print":xs) = parsePrint f
 parseToExp f@("for":xs) = parseFor f
-parseToExp f@("break":xs) = BreakExp
 parseToExp f@(x:"(":xs) = parseAppExp f
 parseToExp (x:op:y) = BinOpExp op (parseToExp [x]) (parseToExp y)
 

@@ -1,19 +1,23 @@
+let x = 2
+
+// Conditionals
+
+if ( x > 4 ) { print ( x ) ; } else { print ( y ) ; }
 if ( true ) { let x = 10 ; let y = 20 ; print ( y ) ; let z = x + y ; print ( z ) ; }
 
+// Functions
 function g ( p1 , p2 ) { let x = p1 ; let y = p2 ; let z = x + y ; print ( z ) ; }
 function f ( p1 ) { let x = p1 ; print ( p1 ) ; }
-
-for ( var i = 0 ; i <= 10 ; i ++ ) l{ let x = x + 1 l; if ( x > 4 ) { print ( x ) ; } l; l}
-for ( var i = 0 ; i <= 10 ; i ++ ) l{ print ( i ) l; l}
+let f = ( p1 , p2 ) => { let x = p1 ; let y = p2 ; let z = x + y ; print ( z ) ; }
 
 f ( 1 )
 
 g ( 2 , 5 )
 
-let x = 2
+// For Loops
+for ( var i = 0 ; i <= 10 ; i ++ ) l{ let x = x + 1 l; if ( x > 4 ) { print ( x ) ; } l; l}
+for ( var i = 0 ; i <= 10 ; i ++ ) l{ if ( x > 4 ) { break ; } l; print ( x ) l; let x = x + 1 l; l}
+for ( var i = 0 ; i < 10 ; i ++ ) l{ print ( i ) l; l}
 
-let f = ( p1 , p2 ) => { let x = p1 ; let y = p2 ; let z = x + y ; print ( z ) ; }
+// While Loops
 while ( x < 4 ) l{ let x = x + 1 l; print ( x ) l; l}
-
-if ( x > 4 ) { print ( x ) ; } else { print ( y ) ; }
-

@@ -21,6 +21,7 @@ printOutput [] = return ()
 printOutput ((Nil):xs) = do 
      result <- printOutput xs 
      return result 
+printOutput ((BreakVal):xs) = printOutput []
 printOutput (x:xs) = do 
     print x 
     result <- printOutput xs 

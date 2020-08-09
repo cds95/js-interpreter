@@ -50,6 +50,9 @@ data Exp = LetExp String Exp |
            WhileExp Exp [Exp] | 
            BreakExp 
 
+instance Show Exp where 
+       show BreakExp = "BreakExp"
+
 data Diagnostic = UnimplementedError String |
                   UndefinedError String |
                   AssigningToConstantError String 
